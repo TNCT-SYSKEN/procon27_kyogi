@@ -7,6 +7,7 @@
 # include "fstream"
 
 #define gosa 1
+//test
 
 PieceManager::PieceManager() {
 	pieces = vector<shared_ptr<Piece> >();
