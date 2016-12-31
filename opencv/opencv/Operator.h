@@ -30,13 +30,15 @@ public:
 	//頂点・辺・角を求める
 	void init_pieces();
 
-	void sertch_line();
+	//void sertch_line();
 
-	void sertch_edge();
+	//void sertch_edge();
 
-	void marge_piece();
+	//void marge_piece();
 
-	void line_dt();
+	//void line_dt();
+
+	//void cut_image(string str);
 
 	void cut_image(string str);
 
