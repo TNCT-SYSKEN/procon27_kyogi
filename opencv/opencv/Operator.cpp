@@ -116,14 +116,39 @@ void Operator::init_pieces() {
 }*/
 
 void Operator::cut_image(string str) {
+	//輪郭のアレ
+	vector<vector<cv::Point>> contours;
+
+	vector < cv::Point > approx;
 	//画像の読み取り
 	cv::Mat piece = cv::imread(str, 0);
+
+	cv::Mat ans = cv::imread(str, 1);
+
+	cv::threshold(piece, piece, 70, 255, CV_THRESH_BINARY);
+
+	cv::findContours(piece, contours, CV_RETR_LIST, CV_CHAIN_APPROX_NONE);
+
+	for (auto contour = contours.begin(); contour != contours.end(); contour++) {
+		cv::polylines(piece, *contour, true, cv::Scalar(255, 255, 255), 2);
+	}
+
+	/*for (int i = 0;i < contours.size();i++) {
+		cv::approxPolyDP(contours, approx, 500, true);
+	}*/
+
+	cv::resize(piece, piece, cv::Size(), 0.3,0.3);
+
+	cv::imshow("hogehoge", piece);
+
+	//cv::threshold(piece, piece, 0, 255, CV_THRESH_BINARY | CV_THRESH_OTSU);
+
 	//分割するための点を定義
-	vector<cv::Point> p = { { 0, 0 },{ piece.cols / 2, 0 },{ 0, piece.rows / 2 },{ piece.cols / 2, piece.rows / 2 } };
+	/*vector<cv::Point> p = { { 0, 0 },{ piece.cols / 2, 0 },{ 0, piece.rows / 2 },{ piece.cols / 2, piece.rows / 2 } };
 	for (auto itr = p.begin(); itr != p.end(); ++itr) {
 		// 関心領域を元の画像から矩形で切り出す
 		cv::Mat roi = piece(cv::Rect(itr->x, itr->y, piece.cols / 2, piece.rows / 2));
 		// 連番で画像を書き出す
 		cv::imwrite("new_item/dst" + std::to_string(itr - p.begin()) + ".jpg", roi);
-	}
+	}*/
 }
