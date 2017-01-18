@@ -125,6 +125,12 @@ void Operator::cut_image(string str) {
 
 	cv::Mat ans = cv::imread(str, 1);
 
+	vector<cv::Mat> roi;
+
+	vector<cv::Mat> cut_ans;
+
+	int roicount = 0;
+
 	cv::threshold(piece, piece, 70, 255, CV_THRESH_BINARY);
 
 	cv::findContours(piece, contours, CV_RETR_LIST, CV_CHAIN_APPROX_NONE);
@@ -133,9 +139,45 @@ void Operator::cut_image(string str) {
 		cv::polylines(piece, *contour, true, cv::Scalar(255, 255, 255), 2);
 	}
 
-	/*for (int i = 0;i < contours.size();i++) {
-		cv::approxPolyDP(contours, approx, 500, true);
-	}*/
+	cout << contours.size() << endl;
+
+	for (auto contour = contours.begin(); contour != contours.end(); contour++) {
+		// 直線近似してます
+		cv::approxPolyDP(cv::Mat(*contour),approx, 0.01 * cv::arcLength(*contour, true), true);
+
+		double area = cv::contourArea(approx);
+
+		if (area > 1000.0) {
+			//青で囲む場合            
+			cv::polylines(ans, approx, true, cv::Scalar(255, 255, 255), 2);
+			std::stringstream sst;
+			sst << "area : " << area;
+			cv::putText(ans, sst.str(), approx[0], CV_FONT_HERSHEY_PLAIN, 1.0, cv::Scalar(0, 128, 0));
+
+			//輪郭に隣接する矩形の取得
+		//	cv::Rect brect = cv::boundingRect(cv::Mat(approx).reshape(2));
+		//	roi[roicount] = cv::Mat(ans, brect);
+
+			//入力画像に表示する場合
+			//cv::drawContours(imgIn, contours, i, CV_RGB(0, 0, 255), 4);
+
+			//表示
+			//cv::resize(ans, ans, cv::Size(), 0.3, 0.3);
+			//cv::imshow("hoge", ans);
+			//cv::imshow("label" + std::to_string(roicount + 1), roi[roicount]);
+
+			//roicount++;
+
+			//念のため輪郭をカウント
+			/*if (roicount == 99)
+			{
+				break;
+			}*/
+		}
+	}
+
+	cv::resize(ans, ans, cv::Size(), 0.3, 0.3);
+	cv::imshow("hoge", ans);
 
 	cv::resize(piece, piece, cv::Size(), 0.3,0.3);
 
