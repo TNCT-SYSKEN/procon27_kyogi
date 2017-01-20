@@ -25,20 +25,10 @@ void Operator::read_image() {
 		//str += to_string(i);
 		//str += ").png";
 		//cut_image(str);
-		string str = "item/test.png";
+		string str = "item/test.jpg";
 		cut_image(str);
 	//	hoge = 1;
 	//}
-	for (int i = 0; i < 4; i++) {
-		//string str = "new_item/img";
-		//string str = "item/img (";
-		string str = "new_item/dst";
-		str += to_string(i);
-		str += ".jpg";
-		cv::Mat a = cv::imread(str, 0);
-		cv::imshow(str, a);
-		images.push_back(make_shared<cv::Mat> (cv::imread(str, 0)));
-	}
 
 	//枠の読み込み
 	//frame = make_shared<Frame>(make_shared<cv::Mat> (cv::imread("item/frame.png", 0)), 0);
@@ -125,7 +115,7 @@ void Operator::cut_image(string str) {
 
 	cv::Mat ans = cv::imread(str, 1);
 
-	vector<cv::Mat> roi;
+	vector<cv::Rect> roi;
 
 	vector<cv::Mat> cut_ans;
 
@@ -149,37 +139,27 @@ void Operator::cut_image(string str) {
 
 		if (area > 1000.0) {
 			//青で囲む場合            
-			cv::polylines(ans, approx, true, cv::Scalar(255, 255, 255), 2);
+			//cv::polylines(ans, approx, true, cv::Scalar(255, 0, 255), 2);
 			std::stringstream sst;
 			sst << "area : " << area;
-			cv::putText(ans, sst.str(), approx[0], CV_FONT_HERSHEY_PLAIN, 1.0, cv::Scalar(0, 128, 0));
+			//cv::putText(ans, sst.str(), approx[0], CV_FONT_HERSHEY_PLAIN, 1.0, cv::Scalar(0, 128, 0));
 
-			//輪郭に隣接する矩形の取得
-		//	cv::Rect brect = cv::boundingRect(cv::Mat(approx).reshape(2));
-		//	roi[roicount] = cv::Mat(ans, brect);
-
-			//入力画像に表示する場合
-			//cv::drawContours(imgIn, contours, i, CV_RGB(0, 0, 255), 4);
-
-			//表示
-			//cv::resize(ans, ans, cv::Size(), 0.3, 0.3);
-			//cv::imshow("hoge", ans);
-			//cv::imshow("label" + std::to_string(roicount + 1), roi[roicount]);
-
-			//roicount++;
-
-			//念のため輪郭をカウント
-			/*if (roicount == 99)
-			{
-				break;
-			}*/
+			cv::Rect brect = cv::boundingRect(cv::Mat(approx).reshape(2));
+			roi.push_back(brect);
 		}
 	}
 
-	cv::resize(ans, ans, cv::Size(), 0.3, 0.3);
-	cv::imshow("hoge", ans);
+	cout << roi.size() << endl;
 
-	cv::resize(piece, piece, cv::Size(), 0.3,0.3);
+	for (int i = 0; i < roi.size(); i++) {
+		cv::Mat cut_img(ans, roi[i]);
+		string cut = "new_item/cut";
+		cut += to_string(i);
+		cut += ".jpg";
+		cv::imwrite(cut, cut_img);
+	}
+
+	cv::imshow("hoge", ans);
 
 	cv::imshow("hogehoge", piece);
 
