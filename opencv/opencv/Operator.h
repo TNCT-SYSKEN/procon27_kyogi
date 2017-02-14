@@ -30,17 +30,9 @@ public:
 	//頂点・辺・角を求める
 	void init_pieces();
 
-	//void sertch_line();
-
-	//void sertch_edge();
-
-	//void marge_piece();
-
-	//void line_dt();
-
-	//void cut_image(string str);
-
 	void cut_image(string str);
+
+	string change_bw(string img,int i);
 
 private:
 	shared_ptr<PieceManager> piece_manager;
