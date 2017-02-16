@@ -2,9 +2,6 @@
 
 # define piece_number 1
 
-int i;
-int hoge = 0;
-
 Operator::Operator() {
 	piece_manager = make_shared<PieceManager>();
 	gui = make_shared<GUI>();
@@ -27,7 +24,7 @@ void Operator::read_image() {
 			img += i;
 			img += ".jpg";
 			//確か白黒にしてからpushしてたので二値化
-			cv::Mat bin_img = cv::imread(change_bw(img, i),CV_IMREAD_UNCHANGED);
+			cv::Mat bin_img = cv::imread(change_bw(img, i),1);
 			i++;
 		}
 
@@ -101,10 +98,10 @@ void Operator::cut_image(string str) {
 string Operator::change_bw(string img,int i) {
 	cv::Mat gray = cv::imread(img, 0);
 	cv::Mat bin;
+	ostringstream oss;
 	threshold(gray, bin, 0, 255, CV_THRESH_BINARY | CV_THRESH_OTSU);
-	string new_img = "new_item/bin";
-	new_img += i;
-	new_img += ".jpg";
-	cv::imwrite(img, bin);
+	oss << "new_item/bin" << i << ".jpg";
+	string new_img = oss.str();
+	cv::imwrite(new_img, bin);
 	return new_img;
 }
