@@ -2,7 +2,7 @@
 
 Piece::Piece(shared_ptr<cv::Mat> img, int num) {
 	image = img;
-	number.push_back(num);
+	number = num;
 	reverse_flag = false;
 	put_flag = false;
 	string str = "a";

@@ -57,8 +57,7 @@ public:
 
 	/*-------------*/
 private:
-	//実物のピースと対応させる。くっつけていくと複数になるのでvectorに変更
-	vector<int> number;
+	int number;
 	//何角形か
 	int number_of_corner;
 	//辺の長さ(r)

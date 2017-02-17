@@ -20,6 +20,19 @@ void PieceManager::init_pieces(vector<shared_ptr<cv::Mat> > images, shared_ptr<F
 	//frame = f;
 }
 
+//アルゴリズムを動かす
+void PieceManager::algorithm_exe() {
+	//比較するやつ
+	//numberとangleを返すと楽
+	search_apply();
+}
+
+//ここに比較する処理を書いてく
+//値はポインタを使ってかえしてくだしあ
+void PieceManager::search_apply() {
+
+}
+
 /*void PieceManager::exec_algorithm() {
 	search_angle();
 	put_image();

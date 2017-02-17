@@ -45,6 +45,9 @@ public:
 	//サーチで見つけたピースを枠にはめる
 	//void put_image();
 
+	void algorithm_exe();
+
+	void search_apply();
 
 private:
 	//ピースの配列
