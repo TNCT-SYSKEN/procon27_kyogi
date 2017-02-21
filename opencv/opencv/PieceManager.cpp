@@ -8,6 +8,11 @@
 
 #define gosa 1
 //test
+struct piece {
+	double frame_line;
+	double piece_line;
+	double piece_number;
+};
 
 PieceManager::PieceManager() {
 	pieces = vector<shared_ptr<Piece> >();
@@ -30,7 +35,61 @@ void PieceManager::algorithm_exe() {
 //ここに比較する処理を書いてく
 //値はポインタを使ってかえしてくだしあ
 void PieceManager::search_apply() {
+	
+}
 
+void PieceManager::pair_angle() {
+	shared_ptr<double> test;
+	vector<shared_ptr<double> > frame_angle;
+	for (int i = 0; i < frame->get_angle().size(); i++) {
+		frame_angle.push_back(test);
+	}
+	frame_angle = frame->get_angle();
+	//枠の角度の確保
+
+	vector<shared_ptr<double> > angles;
+	for (int i = 0; i < pieces.size(); i++) {
+		for (int j = 0; j < pieces[j]->get_angle().size(); j++) {
+			angles.push_back(test);
+		}
+	}
+
+	for (int i = 0; i < frame_angle.size(); i++) {
+		for (int j = 0; j < pieces.size(); j++) {
+			angles = pieces[j]->get_angle();
+			//j番目のピースの角度
+			for (int k = 0; k < angles.size(); k++) {
+				if (*frame_angle[i] - *angles[k] <= gosa ||
+				*frame_angle[i] - *angles[k] >= gosa) {
+					pair_line();
+					//誤差はdefineで指定。角度が一致するものを探索
+					//↑修正。誤差は最もずれの小さい組み合わせとする。
+					/*com_piece com;
+					com.num_frame_angle = i;
+					com.num_piece = j;
+					com.num_angle = k;
+					combination_angles.push_back(com);
+					com.print();*/
+					//piecemaneger.hにあるよ
+				}
+			}
+		}
+	}
+}
+
+void PieceManager::pair_line() {
+	struct piece line;
+	shared_ptr<double> test;
+	vector<shared_ptr<double> > frame_line = frame->get_line_lengths();
+	//frameの辺
+	shared_ptr<double> lines;
+	lines = pieces[line.piece_number]->get_piece_line(line.piece_line);
+	if (*frame_line[line.frame_line] - *lines > 0 - gosa) {
+		//枠とピースの各辺を比較。ただしピースは枠を超えない
+		//ここでのi,jは角度の処理に依存する
+
+		//(枠を更新)
+	}
 }
 
 /*void PieceManager::exec_algorithm() {

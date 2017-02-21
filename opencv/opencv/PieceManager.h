@@ -38,6 +38,8 @@ public:
 	//ピースの初期化
 	void init_pieces(vector<shared_ptr<cv::Mat> > images, shared_ptr<Frame> f);
 	
+	void pair_angle();
+	void pair_line();
 	//アルゴリズム？の実行関数
 	//void exec_algorithm();
 	//角度のサーチ関数

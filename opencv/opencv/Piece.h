@@ -24,6 +24,7 @@ public:
 	vector<shared_ptr<double> > get_line_lengths() const { return line_lengths; }
 	vector<shared_ptr<double> > get_angle() const { return angle; }
 	vector<shared_ptr<cv::Point> > get_vertex() const { return vertex; }
+	shared_ptr<double> get_piece_line(double number) const { return line_lengths[number]; }
 
 	void get_vertex(vector<shared_ptr<cv::Point> > ver){ vertex = ver; }
 	//必要そうなのでseter
