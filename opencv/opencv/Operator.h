@@ -34,6 +34,8 @@ public:
 
 	string change_bw(string img,int i);
 
+	void frame_bin();
+
 private:
 	shared_ptr<PieceManager> piece_manager;
 	//画像が届き次第プログラムを書くと

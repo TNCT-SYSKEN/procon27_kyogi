@@ -25,8 +25,10 @@ void Operator::read_image() {
 		cv::Mat bin_img = cv::imread(change_bw(img.str(), i),1);
 	}
 
+	//とりあえず枠の二値化
+	frame_bin();
 	//枠の読み込み
-	//frame = make_shared<Frame>(make_shared<cv::Mat> (cv::imread("item/frame.png", 0)), 0);
+	//frame = make_shared<Frame>(make_shared<cv::Mat> (cv::imread("new_item/frame.png", 0)), 0);
 }
 
 void Operator::init_pieces() {
@@ -106,4 +108,12 @@ string Operator::change_bw(string img,int i) {
 	string new_img = oss.str();
 	cv::imwrite(new_img, bin);
 	return new_img;
+}
+
+void Operator::frame_bin() {
+	cv::Mat gray = cv::imread("item/frame.jpg",0);
+	cv::Mat bin;
+	threshold(gray, bin, 0, 255, CV_THRESH_BINARY | CV_THRESH_OTSU);
+	cv::imshow("frame_bin", bin);
+	cv::imwrite("new_item/frame.jpg",bin);
 }
