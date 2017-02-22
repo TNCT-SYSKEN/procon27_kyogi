@@ -69,8 +69,8 @@ void PieceManager::pair_angle() {
 					com.num_piece = j;
 					com.num_angle = k;
 					combination_angles.push_back(com);
-					com.print();*/
-					//piecemaneger.hにあるよ
+					com.print();
+					//piecemaneger.hにあるよ*/
 				}
 			}
 		}
@@ -83,7 +83,7 @@ void PieceManager::pair_line() {
 	vector<shared_ptr<double> > frame_line = frame->get_line_lengths();
 	//frameの辺
 	shared_ptr<double> lines;
-	lines = pieces[line.piece_number]->get_piece_line(line.piece_line);
+	//lines = pieces[line.piece_number]->get_piece_line(line.piece_line);
 	if (*frame_line[line.frame_line] - *lines > 0 - gosa) {
 		//枠とピースの各辺を比較。ただしピースは枠を超えない
 		//ここでのi,jは角度の処理に依存する

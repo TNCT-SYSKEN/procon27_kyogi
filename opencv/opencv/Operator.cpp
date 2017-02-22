@@ -15,8 +15,17 @@ void Operator::exec() {
 
 void Operator::read_image() {
 	//読み込んだ画像はimagesにpushしていく
-	string str = "item/test.jpg";
-	int count = cut_image(str);
+	int count = 0;
+	for (int i = 1;;i++) {
+		ostringstream oss;
+		oss << "item/piece (" << i << ").jpg";
+		cv::Mat test = cv::imread(oss.str(), 1);
+		//読み込む画像が無くなったらbreak
+		if (test.data == NULL) {
+			break;
+		}
+		count += cut_image(oss.str(),count);
+	}
 	//切り分けた画像をpushする
 	for(int i = 0;i < count;i++){
 		ostringstream img;
@@ -26,7 +35,7 @@ void Operator::read_image() {
 	}
 
 	//とりあえず枠の二値化
-	frame_bin();
+	//frame_bin();
 	//枠の読み込み
 	//frame = make_shared<Frame>(make_shared<cv::Mat> (cv::imread("new_item/frame.png", 0)), 0);
 }
@@ -35,7 +44,7 @@ void Operator::init_pieces() {
 	piece_manager->init_pieces(images,frame);
 }
 
-int Operator::cut_image(string str) {
+int Operator::cut_image(string str,int count) {
 	//輪郭のアレ
 	vector<vector<cv::Point>> contours;
 
@@ -83,10 +92,9 @@ int Operator::cut_image(string str) {
 
 	for (int i = 0; i < roi.size(); i++) {
 		cv::Mat cut_img(ans, roi[i]);
-		string cut = "new_item/cut";
-		cut += to_string(i);
-		cut += ".jpg";
-		cv::imwrite(cut, cut_img);
+		ostringstream oss;
+		oss << "new_item/cut" << i + count << ".jpg";
+		cv::imwrite(oss.str(), cut_img);
 	}
 
 	cv::imshow("hoge", ans);

@@ -30,7 +30,7 @@ public:
 	//頂点・辺・角を求める
 	void init_pieces();
 
-	int cut_image(string str);
+	int cut_image(string str,int count);
 
 	string change_bw(string img,int i);
 
