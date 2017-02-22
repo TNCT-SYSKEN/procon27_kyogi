@@ -38,82 +38,36 @@ void PieceManager::search_apply() {
 	
 }
 
-/*void PieceManager::pair_angle() {
-	shared_ptr<double> test;
-	vector<shared_ptr<double> > frame_angle;
-	for (int i = 0; i < frame->get_angle().size(); i++) {
-		frame_angle.push_back(test);
-	}
-	frame_angle = frame->get_angle();
-	//枠の角度の確保
-
-	vector<shared_ptr<double> > angles;
-	for (int i = 0; i < pieces.size(); i++) {
-		for (int j = 0; j < pieces[j]->get_angle().size(); j++) {
-			angles.push_back(test);
-		}
-	}
-
-	for (int i = 0; i < frame_angle.size(); i++) {
-		for (int j = 0; j < pieces.size(); j++) {
-			angles = pieces[j]->get_angle();
-			//j番目のピースの角度
-			for (int k = 0; k < angles.size(); k++) {
-				if (*frame_angle[i] - *angles[k] <= gosa ||
-				*frame_angle[i] - *angles[k] >= gosa) {
-					pair_line();
-					//誤差はdefineで指定。角度が一致するものを探索
-					//↑修正。誤差は最もずれの小さい組み合わせとする。
-					/*com_piece com;
-					com.num_frame_angle = i;
-					com.num_piece = j;
-					com.num_angle = k;
-					combination_angles.push_back(com);
-					com.print();
-					//piecemaneger.hにあるよ
-				}
-			}
-		}
-	}
-}
-
-void PieceManager::pair_line() {
-	struct piece line;
-	shared_ptr<double> test;
-	vector<shared_ptr<double> > frame_line = frame->get_line_lengths();
-	//frameの辺
-	shared_ptr<double> lines;
-	//lines = pieces[line.piece_number]->get_piece_line(line.piece_line);
-	if (*frame_line[line.frame_line] - *lines > 0 - gosa) {
-		//枠とピースの各辺を比較。ただしピースは枠を超えない
-		//ここでのi,jは角度の処理に依存する
-
-		//(枠を更新)
-	}
-}
-
-/*void PieceManager::exec_algorithm() {
+void PieceManager::exec_algorithm() {
 	search_angle();
-	put_image();
-}*/
+	for (int i = combination_angles.size(); i >= 0; i--) {
+		if (search_line(i)) {
+			break;
+		}
+	}
+	//put_image();
+}
 
-/*void PieceManager::search_angle() {
+void PieceManager::search_angle() {
 	//フレームの角度
 	vector<shared_ptr<double> > frame_angles = frame->get_angle();
+	double deviation = 2; //保持されているframeとピースの角度の最も小さい誤差。初期値は2
+	int flag = 0;
 
 	for (int i = 0; i < frame_angles.size(); i++) {
 		for (int j = 0; j < pieces.size(); j++) {
 			//ピース一つの角度
 			vector<shared_ptr<double> > angles = pieces[j]->get_angle();
+			com_piece com;
 			for (int k = 0; k < angles.size(); k++) {
 				int p_ang = (int)(*angles[k]);
 				int f_ang = (int)(*frame_angles[i]);
 				//許容範囲は+-2
-				if (abs(p_ang - f_ang) <= 2) {
-					com_piece com;
+				if (f_ang - p_ang > 0 || f_ang - p_ang < deviation) {
 					com.num_frame_angle = i;
 					com.num_piece = j;
 					com.num_angle = k;
+					deviation = p_ang - f_ang;
 					combination_angles.push_back(com);
 					com.print();
 				}
@@ -121,7 +75,30 @@ void PieceManager::pair_line() {
 		}
 	}
 	cout << endl;
-}*/
+}
+
+bool PieceManager::search_line(int p) {
+	int i = combination_angles[p].num_angle;
+	int j = combination_angles[p].num_piece;
+	int k = combination_angles[p].num_frame_angle;
+	vector<shared_ptr<double> > frame_lines = frame->get_line_lengths();
+	shared_ptr<double> piece_lines = pieces[j]->get_piece_line(k);
+	if (j == 0 && k != 0) {
+		shared_ptr<double> piece_line_other = pieces[pieces.size() - 1]->get_piece_line(k - 1);
+	}
+	else if (k == 0 && j != 0) {
+		shared_ptr<double> piece_line_other = pieces[j - 1]->get_piece_line(sizeof(*pieces[j - 1]) - 1);
+	}
+	else if (k == 0 && j == 0) {
+		shared_ptr<double> piece_line_other = pieces[pieces.size() - 1]->get_piece_line(sizeof(*pieces[j - 1]) - 1);
+	}
+	else if (k != 0 && j != 0) {
+		shared_ptr<double> piece_lines_other = pieces[j - 1]->get_piece_line(k - 1);
+	}
+	if (*frame_lines[i] - *piece_lines > 0) {
+		return true;
+	}
+}
 
 /*void PieceManager::put_image() {
 	//枠とピースの頂点座標を取ってくる
