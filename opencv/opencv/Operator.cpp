@@ -35,9 +35,9 @@ void Operator::read_image() {
 	}
 
 	//とりあえず枠の二値化
-	//frame_bin();
+	frame_bin();
 	//枠の読み込み
-	//frame = make_shared<Frame>(make_shared<cv::Mat> (cv::imread("new_item/frame.png", 0)), 0);
+	frame = make_shared<Frame>(make_shared<cv::Mat> (cv::imread("new_item/frame.png", 0)), 0);
 }
 
 void Operator::init_pieces() {
@@ -61,6 +61,8 @@ int Operator::cut_image(string str,int count) {
 	int roicount = 0;
 
 	cv::threshold(piece, piece, 70, 255, CV_THRESH_BINARY);
+	
+	cv::imshow("test", piece);
 
 	cv::findContours(piece, contours, CV_RETR_LIST, CV_CHAIN_APPROX_NONE);
 
@@ -122,6 +124,7 @@ void Operator::frame_bin() {
 	cv::Mat gray = cv::imread("item/frame.jpg",0);
 	cv::Mat bin;
 	threshold(gray, bin, 0, 255, CV_THRESH_BINARY | CV_THRESH_OTSU);
-	cv::imshow("frame_bin", bin);
+	bin = ~bin;
+	cv::imshow("frame_bin",bin);
 	cv::imwrite("new_item/frame.jpg",bin);
 }

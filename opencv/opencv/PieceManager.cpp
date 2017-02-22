@@ -38,7 +38,7 @@ void PieceManager::search_apply() {
 	
 }
 
-void PieceManager::pair_angle() {
+/*void PieceManager::pair_angle() {
 	shared_ptr<double> test;
 	vector<shared_ptr<double> > frame_angle;
 	for (int i = 0; i < frame->get_angle().size(); i++) {
@@ -70,7 +70,7 @@ void PieceManager::pair_angle() {
 					com.num_angle = k;
 					combination_angles.push_back(com);
 					com.print();
-					//piecemaneger.h‚É‚ ‚é‚æ*/
+					//piecemaneger.h‚É‚ ‚é‚æ
 				}
 			}
 		}
