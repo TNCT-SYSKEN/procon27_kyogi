@@ -11,6 +11,7 @@ Operator::Operator() {
 void Operator::exec() {
 	read_image();
 	init_pieces();
+	gui->draw(piece_manager->get_pieces(), frame);
 }
 
 void Operator::read_image() {
@@ -18,7 +19,7 @@ void Operator::read_image() {
 	int count = 0;
 	for (int i = 1;;i++) {
 		ostringstream oss;
-		oss << "item/piece (" << i << ").jpg";
+		oss << "item/piece (" << i << ").png";
 		cv::Mat test = cv::imread(oss.str(), 1);
 		//読み込む画像が無くなったらbreak
 		if (test.data == NULL) {
@@ -121,10 +122,10 @@ string Operator::change_bw(string img,int i) {
 }
 
 void Operator::frame_bin() {
-	cv::Mat gray = cv::imread("item/frame.jpg",0);
+	cv::Mat gray = cv::imread("item/frame.png",0);
 	cv::Mat bin;
-	threshold(gray, bin, 0, 255, CV_THRESH_BINARY | CV_THRESH_OTSU);
-	bin = ~bin;
+	threshold(gray, bin, 0, 255, CV_THRESH_BINARY/* | CV_THRESH_OTSU*/);
+	//bin = ~bin;
 	cv::imshow("frame_bin",bin);
-	cv::imwrite("new_item/frame.jpg",bin);
+	cv::imwrite("new_item/frame.png",bin);
 }

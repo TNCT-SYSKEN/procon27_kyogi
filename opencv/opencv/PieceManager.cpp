@@ -22,20 +22,7 @@ void PieceManager::init_pieces(vector<shared_ptr<cv::Mat> > images, shared_ptr<F
 	for (int i = 0; i < images.size(); i++) {
 		pieces.push_back(make_shared<Piece>(Piece(images[i], i)));
 	}
-	//frame = f;
-}
-
-//アルゴリズムを動かす
-void PieceManager::algorithm_exe() {
-	//比較するやつ
-	//numberとangleを返すと楽
-	search_apply();
-}
-
-//ここに比較する処理を書いてく
-//値はポインタを使ってかえしてくだしあ
-void PieceManager::search_apply() {
-	
+	frame = f;
 }
 
 void PieceManager::exec_algorithm() {
