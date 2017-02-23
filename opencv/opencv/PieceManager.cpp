@@ -39,13 +39,16 @@ void PieceManager::search_apply() {
 }
 
 void PieceManager::exec_algorithm() {
+	int i;
 	search_angle();
-	for (int i = combination_angles.size(); i >= 0; i--) {
+	for (i = combination_angles.size(); i >= 0; i--) {
 		if (search_line(i)) {
+			//角度、辺ともに合ってればtrue
+			//trueであるときcombination_angles[i]は正しいと言える
 			break;
 		}
 	}
-	//put_image();
+	put_image(i);
 }
 
 void PieceManager::search_angle() {
@@ -98,11 +101,12 @@ bool PieceManager::search_line(int p) {
 	if (*frame_lines[i] - *piece_lines > 0) {
 		return true;
 	}
+	return false;
 }
 
-/*void PieceManager::put_image() {
+void PieceManager::put_image(int i) {
 	//枠とピースの頂点座標を取ってくる
-	com_piece com = combination_angles[0];
+	com_piece com = combination_angles[i];
 	vector<shared_ptr<cv::Point> > frame_vertex = frame->get_vertex();
 	vector<shared_ptr<cv::Point> > piece_vertex = pieces[com.num_piece]->get_vertex();
 
@@ -197,4 +201,4 @@ bool PieceManager::search_line(int p) {
 		C.y = root.y + (src.x - root.x) * sin(radian) + (src.y - root.y) * cos(radian);
 		*piece_vertex[i] = C;
 	}
-}*/
+}
