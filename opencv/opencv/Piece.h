@@ -16,7 +16,7 @@ class Piece {
 public:
 	//デフォルトコンストラクタはなしで！
 	/*Piece(int number_of_corner, shared_ptr<vector<double> > line_lengths,
-		shared_ptr<vector<cv::Point> > angle, shared_ptr<vector<cv::Point> > vertex);*/
+	shared_ptr<vector<cv::Point> > angle, shared_ptr<vector<cv::Point> > vertex);*/
 	Piece(shared_ptr<cv::Mat> img, int num);
 
 	//アクセサ
@@ -26,7 +26,7 @@ public:
 	vector<shared_ptr<cv::Point> > get_vertex() const { return vertex; }
 	shared_ptr<double> get_piece_line(double number) const { return line_lengths[number]; }
 
-	void get_vertex(vector<shared_ptr<cv::Point> > ver){ vertex = ver; }
+	void get_vertex(vector<shared_ptr<cv::Point> > ver) { vertex = ver; }
 	//必要そうなのでseter
 	/*void get_number_of_corner(int num ) { number_of_corner = num; }
 	void get_line_lengths(shared_ptr<vector<double> > lengths) { line_lengths = lengths; }

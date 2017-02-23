@@ -37,7 +37,7 @@ public:
 
 	//ピースの初期化
 	void init_pieces(vector<shared_ptr<cv::Mat> > images, shared_ptr<Frame> f);
-	
+
 	//辺のサーチ関数
 	bool search_line(int i);
 	//アルゴリズム？の実行関数
@@ -45,11 +45,13 @@ public:
 	//角度のサーチ関数
 	void search_angle();
 	//サーチで見つけたピースを枠にはめる
-	void put_image();
+	void put_image(int i);
 
 	void algorithm_exe();
 
 	void search_apply();
+	//枠の更新
+	void create_frame(int i, int j, int k);
 
 private:
 	//ピースの配列
