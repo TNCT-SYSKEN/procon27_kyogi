@@ -45,7 +45,7 @@ public:
 	//角度のサーチ関数
 	void search_angle();
 	//サーチで見つけたピースを枠にはめる
-	void put_image(int i);
+	void put_image();
 
 	void algorithm_exe();
 

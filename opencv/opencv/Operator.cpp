@@ -28,11 +28,12 @@ void Operator::read_image() {
 		count += cut_image(oss.str(),count);
 	}
 	//切り分けた画像をpushする
-	for(int i = 0;i < count;i++){
+	for(int i = 0;i < count - 1;i++){
 		ostringstream img;
 		img << "new_item/cut" << i << ".jpg";
 		//確か白黒にしてからpushしてたので二値化
-		cv::Mat bin_img = cv::imread(change_bw(img.str(), i),1);
+		string bin = change_bw(img.str(), i);
+		images.push_back(make_shared<cv::Mat>(cv::imread(bin, 0)));
 	}
 
 	//とりあえず枠の二値化
@@ -87,13 +88,29 @@ int Operator::cut_image(string str,int count) {
 			//cv::putText(ans, sst.str(), approx[0], CV_FONT_HERSHEY_PLAIN, 1.0, cv::Scalar(0, 128, 0));
 
 			cv::Rect brect = cv::boundingRect(cv::Mat(approx).reshape(2));
+			brect.x -= 10;
+			if (brect.x < 0) {
+				brect.x = 0;
+			}
+			brect.y -= 10;
+			if (brect.y < 0) {
+				brect.y = 0;
+			}
+			brect.width += 15;
+			if (brect.width < 0) {
+				brect.width = 0;
+			}
+			brect.height += 15;
+			if (brect.height < 0) {
+				brect.height = 0;
+			}
 			roi.push_back(brect);
 		}
 	}
 
 	cout << roi.size() << endl;
 
-	for (int i = 0; i < roi.size(); i++) {
+	for (int i = 0; i < roi.size() - 1; i++) {
 		cv::Mat cut_img(ans, roi[i]);
 		ostringstream oss;
 		oss << "new_item/cut" << i + count << ".jpg";
@@ -124,7 +141,7 @@ string Operator::change_bw(string img,int i) {
 void Operator::frame_bin() {
 	cv::Mat gray = cv::imread("item/frame.png",0);
 	cv::Mat bin;
-	threshold(gray, bin, 0, 255, CV_THRESH_BINARY/* | CV_THRESH_OTSU*/);
+	threshold(gray, bin, 60, 255, CV_THRESH_BINARY/* | CV_THRESH_OTSU*/);
 	//bin = ~bin;
 	cv::imshow("frame_bin",bin);
 	cv::imwrite("new_item/frame.png",bin);
