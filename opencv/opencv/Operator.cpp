@@ -11,6 +11,8 @@ Operator::Operator() {
 void Operator::exec() {
 	read_image();
 	init_pieces();
+
+	piece_manager->exec_algorithm();
 	gui->draw(piece_manager->get_pieces(), frame);
 }
 
