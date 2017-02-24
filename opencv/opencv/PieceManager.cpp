@@ -26,43 +26,27 @@ void PieceManager::init_pieces(vector<shared_ptr<cv::Mat> > images, shared_ptr<F
 }
 
 void PieceManager::exec_algorithm() {
-	int i;
-	int frame_line, piece_number, piece_line;
 	search_angle();
-	for (i = combination_angles.size(); i >= 0; i--) {
-		if (search_line(i)) {
-			//角度、辺ともに合ってればtrue
-			//trueであるときcombination_angles[i]は正しいと言える
-			frame_line = combination_angles[i].num_frame_angle;
-			piece_number = combination_angles[i].num_piece;
-			piece_line = combination_angles[i].num_angle;
-			create_frame(frame_line, piece_number, piece_line);
-			break;
-		}
-	}
-	put_image(i);
+	put_image();
 }
 
 void PieceManager::search_angle() {
 	//フレームの角度
 	vector<shared_ptr<double> > frame_angles = frame->get_angle();
-	double deviation = 2; //保持されているframeとピースの角度の最も小さい誤差。初期値は2
-	int flag = 0;
 
 	for (int i = 0; i < frame_angles.size(); i++) {
 		for (int j = 0; j < pieces.size(); j++) {
 			//ピース一つの角度
 			vector<shared_ptr<double> > angles = pieces[j]->get_angle();
-			com_piece com;
 			for (int k = 0; k < angles.size(); k++) {
 				int p_ang = (int)(*angles[k]);
 				int f_ang = (int)(*frame_angles[i]);
 				//許容範囲は+-2
-				if (f_ang - p_ang > 0 || f_ang - p_ang < deviation) {
+				if (abs(p_ang - f_ang) <= 2) {
+					com_piece com;
 					com.num_frame_angle = i;
 					com.num_piece = j;
 					com.num_angle = k;
-					deviation = p_ang - f_ang;
 					combination_angles.push_back(com);
 					com.print();
 				}
@@ -96,7 +80,7 @@ bool PieceManager::search_line(int p) {
 	return false;
 }
 
-void PieceManager::create_frame(int i, int j, int k) {
+/*void PieceManager::create_frame(int i, int j, int k) {
 	vector<shared_ptr<double> > sub_frame_line;
 	vector<shared_ptr<double> > frame_lines = frame->get_line_lengths();
 	shared_ptr<double> piece_lines = pieces[j]->get_piece_line(k);
@@ -107,11 +91,11 @@ void PieceManager::create_frame(int i, int j, int k) {
 	//ここからピースの情報をpushback、ただし外側(piece_lines,*(piece_lines-1))を除く
 	//ここから枠の情報をpushback
 	frame->search_line.push_back(*frame_lines[i] - *piece_lines);
-}
+}*/
 
-void PieceManager::put_image(int i) {
+void PieceManager::put_image() {
 	//枠とピースの頂点座標を取ってくる
-	com_piece com = combination_angles[i];
+	com_piece com = combination_angles[0];
 	vector<shared_ptr<cv::Point> > frame_vertex = frame->get_vertex();
 	vector<shared_ptr<cv::Point> > piece_vertex = pieces[com.num_piece]->get_vertex();
 
