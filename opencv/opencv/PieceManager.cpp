@@ -143,26 +143,43 @@ void PieceManager::create_frame(int i, int j, int k) {
 
 	//ここからピースの情報をpushback、ただし上で見つけた部分(sub_piece_line)を除く
 	//↑具体的にはpieces[j]->get_piece_line(sub_piece_line[i])
+	//更新
 	for (int p = k; p >= 0; p--) {
+		int flag = 0;
 		for (int h = 0; h < sub_piece_line.size(); h++) {
 			if (p == h) {
-				break;
+				flag = 1;
 			}
-			frame->search_line.push_back(pieces[j]->get_piece_line(p));
+			if (flag == 1) {
+				frame->search_line.push_back(pieces[j]->get_piece_line(p));
+				flag = 0;
+			}
 		}
 	}
 	for (int p = pieces[j]->get_piece_line.size(); p > k; p--) {
+		int flag = 0;
 		for (int h = 0; h < sub_piece_line.size(); h++) {
 			if (p == h) {
-				break;
+				flag = 1;
 			}
-			frame->search_line.push_back(pieces[j]->get_piece_line(p));
+			if (flag == 1) {
+				frame->search_line.push_back(pieces[j]->get_piece_line(p));
+				flag = 0;
+			}
 		}
 	}
 
 	//ここから枠の情報をpushback
-	//2/26～未完成
+	//↓更新
 	frame->search_line.push_back(*frame_lines[i] - *piece_lines);
+	for (int p = 0; p < sub_piece_line.size(); p++) {
+		int flag=0;
+		if (sub_piece_line[p] == j) {
+			/*if () {
+				
+			}*/
+		}
+	}
 }
 
 void PieceManager::put_image() {
