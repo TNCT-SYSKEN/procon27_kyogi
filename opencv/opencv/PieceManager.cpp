@@ -168,16 +168,28 @@ void PieceManager::create_frame(int i, int j, int k) {
 			}
 		}
 	}
+	if(i==0)
 
 	//ここから枠の情報をpushback
 	//↓更新
+	//1ピース分しか出来てない
 	frame->search_line.push_back(*frame_lines[i] - *piece_lines);
 	for (int p = 0; p < sub_piece_line.size(); p++) {
-		int flag=0;
-		if (sub_piece_line[p] == j) {
-			/*if () {
-				
-			}*/
+		if (p == i) {
+			frame->search_line.push_back(*frame_lines[p] - *pieces[j]->get_piece_line(k));
+		}
+		else if (i != 0){
+			if (i - 1 == p) {
+				frame->search_line.push_back(*frame_lines[p] - *pieces[j]->get_piece_line(k - 1));
+			}
+		}
+		else if (i == 0) {
+			if (frame_lines.size() == p) {
+				frame->search_line.push_back(*frame_lines[p] - *pieces[j]->get_piece_line(k - 1));
+			}
+		}
+		else {
+			frame->search_line.push_back(*frame_lines[p]);
 		}
 	}
 }
