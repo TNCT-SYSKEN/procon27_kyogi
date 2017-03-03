@@ -47,11 +47,7 @@ public:
 	//サーチで見つけたピースを枠にはめる
 	void put_image();
 
-	void algorithm_exe();
-
-	void search_apply();
-	//枠の更新
-	void create_frame(int i, int j, int k);
+	void line_search();
 
 private:
 	//ピースの配列
