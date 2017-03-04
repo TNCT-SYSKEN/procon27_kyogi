@@ -13,7 +13,7 @@ void Operator::exec() {
 	init_pieces();
 
 	piece_manager->exec_algorithm();
-	gui->draw(piece_manager->get_pieces(), frame);
+	//gui->draw(piece_manager->get_pieces(), frame);
 }
 
 void Operator::read_image() {

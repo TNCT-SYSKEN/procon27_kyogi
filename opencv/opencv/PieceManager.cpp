@@ -15,7 +15,7 @@ struct piece {
 };
 
 PieceManager::PieceManager() {
-	pieces = vector<Piece>();
+	//pieces = vector<Piece>();
 }
 
 void PieceManager::init_pieces(vector<shared_ptr<cv::Mat> > images, shared_ptr<Frame> f) {
@@ -44,12 +44,12 @@ void PieceManager::exec_algorithm() {
 
 void PieceManager::search_angle() {
 	//フレームの角度
-	vector<shared_ptr<double> > frame_angles = frame->get_angle();
+	vector<shared_ptr<double> > frame_angles = frame->angle;
 
 	for (int i = 0; i < frame_angles.size(); i++) {
 		for (int j = 0; j < pieces.size(); j++) {
 			//ピース一つの角度
-			vector<shared_ptr<double> > angles = pieces[j]->get_angle();
+			vector<shared_ptr<double> > angles = pieces[j]->angle;
 			for (int k = 0; k < angles.size(); k++) {
 				int p_ang = (int)(*angles[k]);
 				int f_ang = (int)(*frame_angles[i]);
@@ -197,8 +197,8 @@ void PieceManager::put_image() {
 	//後で引数iを渡す
 	com_piece com = combination_angles[0];
 	/*com_piece com = combination_angles[i];*/
-	vector<shared_ptr<cv::Point> > frame_vertex = frame->get_vertex();
-	vector<shared_ptr<cv::Point> > piece_vertex = pieces[com.num_piece]->get_vertex();
+	vector<shared_ptr<cv::Point> > frame_vertex = frame->vertex;
+	vector<shared_ptr<cv::Point> > piece_vertex = pieces[com.num_piece]->vertex;
 
 	//ピースの角度が同じ場所に移動
 	cv::Point diff = *frame_vertex[com.num_frame_angle] - *piece_vertex[com.num_angle];
