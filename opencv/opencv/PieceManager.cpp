@@ -15,7 +15,7 @@ struct piece {
 };
 
 PieceManager::PieceManager() {
-	pieces = vector<shared_ptr<Piece> >();
+	pieces = vector<Piece>();
 }
 
 void PieceManager::init_pieces(vector<shared_ptr<cv::Mat> > images, shared_ptr<Frame> f) {
@@ -28,21 +28,18 @@ void PieceManager::init_pieces(vector<shared_ptr<cv::Mat> > images, shared_ptr<F
 void PieceManager::exec_algorithm() {
 	search_angle();
 	put_image();
-<<<<<<< HEAD
-=======
-	for (i = combination_angles.size(); i >= 0; i--) {
+	for (int i = combination_angles.size(); i >= 0; i--) {
 		if (search_line(i)) {
 			//Šp“xA•Ó‚Æ‚à‚É‡‚Á‚Ä‚ê‚Îtrue
 			//true‚Å‚ ‚é‚Æ‚«combination_angles[i]‚Í³‚µ‚¢‚ÆŒ¾‚¦‚é
-			frame_line = combination_angles[i].num_frame_angle;
-			piece_number = combination_angles[i].num_piece;
-			piece_line = combination_angles[i].num_angle;
-			create_frame(frame_line, piece_number, piece_line);
+			//frame_line = combination_angles[i].num_frame_angle;
+			//piece_number = combination_angles[i].num_piece;
+			//piece_line = combination_angles[i].num_angle;
+			//create_frame(frame_line, piece_number, piece_line);
 			break;
 		}
 	}
 	put_image();
->>>>>>> origin/master
 }
 
 void PieceManager::search_angle() {

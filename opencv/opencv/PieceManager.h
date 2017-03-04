@@ -31,7 +31,7 @@ public:
 	PieceManager();
 
 	//アクセサ
-	vector<shared_ptr<Piece> > get_pieces() const { return pieces; }
+	//vector<shared_ptr<Piece> > get_pieces() const { return pieces; }
 	//num番目のピースを返す(未実装
 	//shared_ptr<Piece> get_p(int num) const { return pieces[num]; }
 
@@ -49,9 +49,10 @@ public:
 
 	void line_search();
 
-private:
+	void create_frame(int i, int j, int k);
+
 	//ピースの配列
-	vector<shared_ptr<Piece> > pieces;
+	vector<Piece> pieces;
 	//角度の組み合わせ格納 
 	vector<com_piece> combination_angles;
 	//フレームクラチュ
