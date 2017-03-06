@@ -13,7 +13,7 @@ void Operator::exec() {
 	init_pieces();
 
 	piece_manager->exec_algorithm();
-	gui->draw(piece_manager->get_pieces(), frame);
+	//gui->draw(piece_manager->get_pieces(), frame);
 }
 
 void Operator::read_image() {
@@ -27,10 +27,10 @@ void Operator::read_image() {
 		if (test.data == NULL) {
 			break;
 		}
-		count += cut_image(oss.str(),count);
+		count += cut_image(oss.str(), count);
 	}
 	//切り分けた画像をpushする
-	for(int i = 0;i < count - 1;i++){
+	for (int i = 0;i < count - 1;i++) {
 		ostringstream img;
 		img << "new_item/cut" << i << ".jpg";
 		//確か白黒にしてからpushしてたので二値化
@@ -41,14 +41,14 @@ void Operator::read_image() {
 	//とりあえず枠の二値化
 	frame_bin();
 	//枠の読み込み
-	frame = make_shared<Frame>(make_shared<cv::Mat> (cv::imread("new_item/frame.png", 0)), 0);
+	frame = make_shared<Frame>(make_shared<cv::Mat>(cv::imread("new_item/frame.png", 0)), 0);
 }
 
 void Operator::init_pieces() {
-	piece_manager->init_pieces(images,frame);
+	piece_manager->init_pieces(images, frame);
 }
 
-int Operator::cut_image(string str,int count) {
+int Operator::cut_image(string str, int count) {
 	//輪郭のアレ
 	vector<vector<cv::Point>> contours;
 
@@ -65,7 +65,7 @@ int Operator::cut_image(string str,int count) {
 	int roicount = 0;
 
 	cv::threshold(piece, piece, 70, 255, CV_THRESH_BINARY);
-	
+
 	cv::imshow("test", piece);
 
 	cv::findContours(piece, contours, CV_RETR_LIST, CV_CHAIN_APPROX_NONE);
@@ -78,7 +78,7 @@ int Operator::cut_image(string str,int count) {
 
 	for (auto contour = contours.begin(); contour != contours.end(); contour++) {
 		// 直線近似してます
-		cv::approxPolyDP(cv::Mat(*contour),approx, 0.01 * cv::arcLength(*contour, true), true);
+		cv::approxPolyDP(cv::Mat(*contour), approx, 0.01 * cv::arcLength(*contour, true), true);
 
 		double area = cv::contourArea(approx);
 
@@ -126,7 +126,7 @@ int Operator::cut_image(string str,int count) {
 	return roi.size();
 }
 
-string Operator::change_bw(string img,int i) {
+string Operator::change_bw(string img, int i) {
 	cv::Mat gray = cv::imread(img, 0);
 	ostringstream test;
 	test << "test" << i;
@@ -141,10 +141,10 @@ string Operator::change_bw(string img,int i) {
 }
 
 void Operator::frame_bin() {
-	cv::Mat gray = cv::imread("item/frame.png",0);
+	cv::Mat gray = cv::imread("item/frame.png", 0);
 	cv::Mat bin;
 	threshold(gray, bin, 60, 255, CV_THRESH_BINARY/* | CV_THRESH_OTSU*/);
 	//bin = ~bin;
-	cv::imshow("frame_bin",bin);
-	cv::imwrite("new_item/frame.png",bin);
+	cv::imshow("frame_bin", bin);
+	cv::imwrite("new_item/frame.png", bin);
 }

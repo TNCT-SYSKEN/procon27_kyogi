@@ -15,7 +15,7 @@ struct piece {
 };
 
 PieceManager::PieceManager() {
-	pieces = vector<shared_ptr<Piece> >();
+	//pieces = vector<Piece>();
 }
 
 void PieceManager::init_pieces(vector<shared_ptr<cv::Mat> > images, shared_ptr<Frame> f) {
@@ -26,18 +26,16 @@ void PieceManager::init_pieces(vector<shared_ptr<cv::Mat> > images, shared_ptr<F
 }
 
 void PieceManager::exec_algorithm() {
-	int i;
-	int frame_line, piece_number, piece_line;
 	search_angle();
 	put_image();
-	for (i = combination_angles.size(); i >= 0; i--) {
+	for (int i = combination_angles.size(); i >= 0; i--) {
 		if (search_line(i)) {
 			//角度、辺ともに合ってればtrue
 			//trueであるときcombination_angles[i]は正しいと言える
-			frame_line = combination_angles[i].num_frame_angle;
-			piece_number = combination_angles[i].num_piece;
-			piece_line = combination_angles[i].num_angle;
-			create_frame(frame_line, piece_number, piece_line);
+			//frame_line = combination_angles[i].num_frame_angle;
+			//piece_number = combination_angles[i].num_piece;
+			//piece_line = combination_angles[i].num_angle;
+			//create_frame(frame_line, piece_number, piece_line);
 			break;
 		}
 	}
@@ -46,12 +44,12 @@ void PieceManager::exec_algorithm() {
 
 void PieceManager::search_angle() {
 	//フレームの角度
-	vector<shared_ptr<double> > frame_angles = frame->get_angle();
+	vector<shared_ptr<double> > frame_angles = frame->angle;
 
 	for (int i = 0; i < frame_angles.size(); i++) {
 		for (int j = 0; j < pieces.size(); j++) {
 			//ピース一つの角度
-			vector<shared_ptr<double> > angles = pieces[j]->get_angle();
+			vector<shared_ptr<double> > angles = pieces[j]->angle;
 			for (int k = 0; k < angles.size(); k++) {
 				int p_ang = (int)(*angles[k]);
 				int f_ang = (int)(*frame_angles[i]);
@@ -74,24 +72,26 @@ bool PieceManager::search_line(int p) {
 	int i = combination_angles[p].num_angle;
 	int j = combination_angles[p].num_piece;
 	int k = combination_angles[p].num_frame_angle;
-	vector<shared_ptr<double> > frame_lines = frame->get_line_lengths();
-	shared_ptr<double> piece_lines = pieces[j]->get_piece_line(k);
+	//vector<shared_ptr<double> > frame_lines = frame->get_line_lengths();
+	vector<shared_ptr<double> > frame_lines = frame->line_lengths;
+	vector<shared_ptr<double> > piece_lines = pieces[j]->line_lengths;
 	shared_ptr<double> piece_line_other;
 	if (k != 0) {
-		piece_line_other = pieces[j]->get_piece_line(k - 1);
+		piece_line_other = pieces[j]->line_lengths[k - 1];
 	}
 	else if (k == 0) {
-		piece_line_other = pieces[j]->get_piece_line(pieces[j]->get_piece_line.size() - 1);
+		piece_line_other = pieces[j]->line_lengths[piece_lines.size() - 1];
 	}
-	if (i== 0) {
+	if (i == 0) {
 		if (*frame_lines[frame_lines.size() - 1] - *piece_line_other) {
-			if (*frame_lines[i] - *piece_lines > 0) {
+			if (*frame_lines[i] - *piece_lines[k] > 0) {
 				return true;
 			}
 		}
-	}else if (i != 0) {
+	}
+	else if (i != 0) {
 		if (*frame_lines[i - 1] - *piece_line_other) {
-			if (*frame_lines[i] - *piece_lines > 0) {
+			if (*frame_lines[i] - *piece_lines[k] > 0) {
 				return true;
 			}
 		}
@@ -100,29 +100,29 @@ bool PieceManager::search_line(int p) {
 }
 
 void PieceManager::create_frame(int i, int j, int k) {
-	int set_frame,set_line;
+	int set_frame, set_line;
 	vector<shared_ptr<double> > sub_frame_line; //枠の辺を避難(格納)させる配列
 	vector<double> sub_piece_line; //除かれるピースの辺を格納するhoge
-	vector<shared_ptr<double> > frame_lines = frame->get_line_lengths();
-	shared_ptr<double> piece_lines = pieces[j]->get_piece_line(k);
-	for (int p = 0; p < *frame->search_line.size(); p++) {
-		sub_frame_line.push_back(frame->search_line[p]);
+	vector<shared_ptr<double> > frame_lines = frame->line_lengths;
+	vector<shared_ptr<double> > piece_lines = pieces[j]->line_lengths;
+	for (int p = 0; p < frame_lines.size(); p++) {
+		sub_frame_line.push_back(frame_lines[p]);
 	}
 
 	//ピースの除かれる部分を探索する処理
-	for (int p = 0; p < *pieces[j]->get_piece_line.size(); p++) {
-		if (i + p >= *frame->get_line_lengths.size()
-			&& k + p >= *pieces[j]->get_piece_line.size()) {
-			set_frame = i + p - *frame->get_line_lengths.size();
-			set_line = k + p - *pieces[j]->get_piece_line.size();
+	for (int p = 0; p < piece_lines.size(); p++) {
+		if (i + p >= frame_lines.size()
+			&& k + p >= piece_lines.size()) {
+			set_frame = i + p - frame_lines.size();
+			set_line = k + p - piece_lines.size();
 		}
-		else if (i + p >= *frame->get_line_lengths.size()) {
-			set_frame = i + p - *frame->get_line_lengths.size();
+		else if (i + p >= frame_lines.size()) {
+			set_frame = i + p - frame_lines.size();
 			set_line = p;
 		}
-		else if (k + p >= *pieces[j]->get_piece_line.size()) {
+		else if (k + p >= piece_lines.size()) {
 			set_frame = i;
-			set_line = k + p - *pieces[j]->get_piece_line.size();
+			set_line = k + p - piece_lines.size();
 		}
 		else {
 			set_frame = i;
@@ -132,18 +132,17 @@ void PieceManager::create_frame(int i, int j, int k) {
 		//枠とピースの辺の比較処理
 		//もし枠の辺とピースの辺が同じであったなら次の処理で除く
 		//許容範囲は+-2
-		if (abs(*frame_lines[set_frame] - *pieces[j]->get_piece_line(set_line)) <= 2) {
+		if (abs(*frame_lines[set_frame] - *piece_lines[set_line]) <= 2) {
 			sub_piece_line.push_back(set_line);
 		}
 
 	}
 
 	//ここで要素全削除
-	frame->search_line.erase(frame->search_line.begin(), frame->search_line.end());
+	frame->line_lengths.erase(frame->line_lengths.begin(), frame->line_lengths.end());
 
 	//ここからピースの情報をpushback、ただし上で見つけた部分(sub_piece_line)を除く
 	//↑具体的にはpieces[j]->get_piece_line(sub_piece_line[i])
-	//更新
 	for (int p = k; p >= 0; p--) {
 		int flag = 0;
 		for (int h = 0; h < sub_piece_line.size(); h++) {
@@ -151,45 +150,58 @@ void PieceManager::create_frame(int i, int j, int k) {
 				flag = 1;
 			}
 			if (flag == 1) {
-				frame->search_line.push_back(pieces[j]->get_piece_line(p));
+				frame->line_lengths.push_back(piece_lines[p]);
 				flag = 0;
 			}
 		}
 	}
-	for (int p = pieces[j]->get_piece_line.size(); p > k; p--) {
+	for (int p = piece_lines.size(); p > k; p--) {
 		int flag = 0;
 		for (int h = 0; h < sub_piece_line.size(); h++) {
 			if (p == h) {
 				flag = 1;
 			}
 			if (flag == 1) {
-				frame->search_line.push_back(pieces[j]->get_piece_line(p));
+				frame->line_lengths.push_back(piece_lines[p]);
 				flag = 0;
 			}
 		}
 	}
-	if(i==0)
 
 	//ここから枠の情報をpushback
 	//↓更新
 	//1ピース分しか出来てない
-	frame->search_line.push_back(*frame_lines[i] - *piece_lines);
+	
+	if (i == 0) {
+		double test = *frame_lines[j] - *piece_lines[k];
+		shared_ptr<double> diff(&test);
+		frame->line_lengths.push_back(diff);
+	}
+
 	for (int p = 0; p < sub_piece_line.size(); p++) {
 		if (p == i) {
-			frame->search_line.push_back(*frame_lines[p] - *pieces[j]->get_piece_line(k));
+			double test = *frame_lines[p] - *piece_lines[k];
+			shared_ptr<double> diff(&test);
+			frame->line_lengths.push_back(diff);
 		}
-		else if (i != 0){
+		else if (i != 0) {
 			if (i - 1 == p) {
-				frame->search_line.push_back(*frame_lines[p] - *pieces[j]->get_piece_line(k - 1));
+				double test = *frame_lines[p] - *piece_lines[k-1];
+				shared_ptr<double> diff(&test);
+				frame->line_lengths.push_back(diff);
 			}
 		}
 		else if (i == 0) {
 			if (frame_lines.size() == p) {
-				frame->search_line.push_back(*frame_lines[p] - *pieces[j]->get_piece_line(k - 1));
+				double test = *frame_lines[p] - *piece_lines[k - 1];
+				shared_ptr<double> diff(&test);
+				frame->line_lengths.push_back(diff);
 			}
 		}
 		else {
-			frame->search_line.push_back(*frame_lines[p]);
+			double test = *frame_lines[p];
+			shared_ptr<double> f_lines(&test);
+			frame->line_lengths.push_back(f_lines);
 		}
 	}
 }
@@ -199,8 +211,8 @@ void PieceManager::put_image() {
 	//後で引数iを渡す
 	com_piece com = combination_angles[0];
 	/*com_piece com = combination_angles[i];*/
-	vector<shared_ptr<cv::Point> > frame_vertex = frame->get_vertex();
-	vector<shared_ptr<cv::Point> > piece_vertex = pieces[com.num_piece]->get_vertex();
+	vector<shared_ptr<cv::Point> > frame_vertex = frame->vertex;
+	vector<shared_ptr<cv::Point> > piece_vertex = pieces[com.num_piece]->vertex;
 
 	//ピースの角度が同じ場所に移動
 	cv::Point diff = *frame_vertex[com.num_frame_angle] - *piece_vertex[com.num_angle];
@@ -293,4 +305,9 @@ void PieceManager::put_image() {
 		C.y = root.y + (src.x - root.x) * sin(radian) + (src.y - root.y) * cos(radian);
 		*piece_vertex[i] = C;
 	}
+}
+
+void PieceManager::line_search() {
+
+
 }

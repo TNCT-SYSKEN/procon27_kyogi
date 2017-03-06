@@ -31,7 +31,7 @@ public:
 	PieceManager();
 
 	//アクセサ
-	vector<shared_ptr<Piece> > get_pieces() const { return pieces; }
+	//vector<shared_ptr<Piece> > get_pieces() const { return pieces; }
 	//num番目のピースを返す(未実装
 	//shared_ptr<Piece> get_p(int num) const { return pieces[num]; }
 
@@ -47,13 +47,10 @@ public:
 	//サーチで見つけたピースを枠にはめる
 	void put_image();
 
-	void algorithm_exe();
+	void line_search();
 
-	void search_apply();
-	//枠の更新
 	void create_frame(int i, int j, int k);
 
-private:
 	//ピースの配列
 	vector<shared_ptr<Piece> > pieces;
 	//角度の組み合わせ格納 
