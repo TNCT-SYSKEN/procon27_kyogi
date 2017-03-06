@@ -49,7 +49,11 @@ public:
 
 	void line_search();
 
+<<<<<<< HEAD
 	void create_frame(int i, int j, int k);
+=======
+	void create_frame(int i,int j,int k);
+>>>>>>> origin/master
 
 	//ピースの配列
 	vector<shared_ptr<Piece> > pieces;

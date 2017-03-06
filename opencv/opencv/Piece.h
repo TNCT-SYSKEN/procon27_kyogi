@@ -24,6 +24,10 @@ public:
 	//vector<shared_ptr<double> > get_angle() const { return angle; }
 	//vector<shared_ptr<cv::Point> > get_vertex() const { return vertex; }
 	//shared_ptr<double> get_piece_line(double number) const { return line_lengths[number]; }
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/master
 	//void get_vertex(vector<shared_ptr<cv::Point> > ver) { vertex = ver; }
 	//必要そうなのでseter
 	/*void get_number_of_corner(int num ) { number_of_corner = num; }
