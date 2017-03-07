@@ -15,11 +15,11 @@ struct piece {
 };
 
 PieceManager::PieceManager() {
-	//pieces = vector<Piece>();
+	pieces = vector<shared_ptr<Piece>>();
 }
 
 void PieceManager::init_pieces(vector<shared_ptr<cv::Mat> > images, shared_ptr<Frame> f) {
-	for (int i = 0; i < images.size(); i++) {
+	for (int i = 0; i < (int)images.size(); i++) {
 		pieces.push_back(make_shared<Piece>(Piece(images[i], i)));
 	}
 	frame = f;
@@ -28,29 +28,17 @@ void PieceManager::init_pieces(vector<shared_ptr<cv::Mat> > images, shared_ptr<F
 void PieceManager::exec_algorithm() {
 	search_angle();
 	put_image();
-	for (int i = combination_angles.size(); i >= 0; i--) {
-		if (search_line(i)) {
-			//角度、辺ともに合ってればtrue
-			//trueであるときcombination_angles[i]は正しいと言える
-			//frame_line = combination_angles[i].num_frame_angle;
-			//piece_number = combination_angles[i].num_piece;
-			//piece_line = combination_angles[i].num_angle;
-			//create_frame(frame_line, piece_number, piece_line);
-			break;
-		}
-	}
-	put_image();
 }
 
 void PieceManager::search_angle() {
 	//フレームの角度
 	vector<shared_ptr<double> > frame_angles = frame->angle;
 
-	for (int i = 0; i < frame_angles.size(); i++) {
-		for (int j = 0; j < pieces.size(); j++) {
+	for (int i = 0; i < (int)frame_angles.size(); i++) {
+		for (int j = 0; j < (int)pieces.size(); j++) {
 			//ピース一つの角度
 			vector<shared_ptr<double> > angles = pieces[j]->angle;
-			for (int k = 0; k < angles.size(); k++) {
+			for (int k = 0; k < (int)angles.size(); k++) {
 				int p_ang = (int)(*angles[k]);
 				int f_ang = (int)(*frame_angles[i]);
 				//許容範囲は+-2
@@ -105,24 +93,24 @@ void PieceManager::create_frame(int i, int j, int k) {
 	vector<double> sub_piece_line; //除かれるピースの辺を格納するhoge
 	vector<shared_ptr<double> > frame_lines = frame->line_lengths;
 	vector<shared_ptr<double> > piece_lines = pieces[j]->line_lengths;
-	for (int p = 0; p < frame_lines.size(); p++) {
+	for (int p = 0; p < (int)frame_lines.size(); p++) {
 		sub_frame_line.push_back(frame_lines[p]);
 	}
 
 	//ピースの除かれる部分を探索する処理
-	for (int p = 0; p < piece_lines.size(); p++) {
-		if (i + p >= frame_lines.size()
-			&& k + p >= piece_lines.size()) {
-			set_frame = i + p - frame_lines.size();
-			set_line = k + p - piece_lines.size();
+	for (int p = 0; p < (int)piece_lines.size(); p++) {
+		if (i + p >= (int)frame_lines.size()
+			&& k + p >= (int)piece_lines.size()) {
+			set_frame = i + p - (int)frame_lines.size();
+			set_line = k + p - (int)piece_lines.size();
 		}
-		else if (i + p >= frame_lines.size()) {
-			set_frame = i + p - frame_lines.size();
+		else if (i + p >= (int)frame_lines.size()) {
+			set_frame = i + p - (int)frame_lines.size();
 			set_line = p;
 		}
-		else if (k + p >= piece_lines.size()) {
+		else if (k + p >= (int)piece_lines.size()) {
 			set_frame = i;
-			set_line = k + p - piece_lines.size();
+			set_line = k + p - (int)piece_lines.size();
 		}
 		else {
 			set_frame = i;
@@ -132,10 +120,14 @@ void PieceManager::create_frame(int i, int j, int k) {
 		//枠とピースの辺の比較処理
 		//もし枠の辺とピースの辺が同じであったなら次の処理で除く
 		//許容範囲は+-2
-		if (abs(*frame_lines[set_frame] - *piece_lines[set_line]) <= 2) {
+		if ((double)abs(*frame_lines[set_frame] - *piece_lines[set_line]) <= 2) {
 			sub_piece_line.push_back(set_line);
 		}
 
+	}
+	//テスト
+	for (int p = 0; p < (int)sub_piece_line.size();p++) {
+		cout << sub_piece_line[p];
 	}
 
 	//ここで要素全削除
@@ -145,7 +137,7 @@ void PieceManager::create_frame(int i, int j, int k) {
 	//↑具体的にはpieces[j]->get_piece_line(sub_piece_line[i])
 	for (int p = k; p >= 0; p--) {
 		int flag = 0;
-		for (int h = 0; h < sub_piece_line.size(); h++) {
+		for (int h = 0; h < (int)sub_piece_line.size(); h++) {
 			if (p == h) {
 				flag = 1;
 			}
@@ -155,9 +147,9 @@ void PieceManager::create_frame(int i, int j, int k) {
 			}
 		}
 	}
-	for (int p = piece_lines.size(); p > k; p--) {
+	for (int p = (int)piece_lines.size(); p > k; p--) {
 		int flag = 0;
-		for (int h = 0; h < sub_piece_line.size(); h++) {
+		for (int h = 0; h < (int)sub_piece_line.size(); h++) {
 			if (p == h) {
 				flag = 1;
 			}
@@ -178,7 +170,7 @@ void PieceManager::create_frame(int i, int j, int k) {
 		frame->line_lengths.push_back(diff);
 	}
 
-	for (int p = 0; p < sub_piece_line.size(); p++) {
+	for (int p = 0; p < (int)sub_piece_line.size(); p++) {
 		if (p == i) {
 			double test = *frame_lines[p] - *piece_lines[k];
 			shared_ptr<double> diff(&test);
@@ -192,7 +184,7 @@ void PieceManager::create_frame(int i, int j, int k) {
 			}
 		}
 		else if (i == 0) {
-			if (frame_lines.size() == p) {
+			if ((int)frame_lines.size() == p) {
 				double test = *frame_lines[p] - *piece_lines[k - 1];
 				shared_ptr<double> diff(&test);
 				frame->line_lengths.push_back(diff);

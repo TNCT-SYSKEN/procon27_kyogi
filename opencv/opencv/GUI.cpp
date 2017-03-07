@@ -20,19 +20,19 @@ void my_mouse_callback(int event, int x, int y, int flags, void* param) {
 	switch (event) {
 	case cv::EVENT_MOUSEMOVE:
 		if (lmoving) {
-			vector<shared_ptr<cv::Point> > vertex = piece->get_vertex();
+			vector<shared_ptr<cv::Point> > vertex = piece->vertex;
 			//Mouseの位置ををピースに代入
-			for (int i = 0; i < piece->get_number_of_corner(); i++) {
+			for (int i = 0; i < piece->number_of_corner; i++) {
 				vertex[i]->x = src_point[i].x + (x - click_point.x);
 				vertex[i]->y = src_point[i].y + (y - click_point.y);
 			}
 		}
 		else if (rmoving) {
-			vector<shared_ptr<cv::Point> > vertex = piece->get_vertex();
+			vector<shared_ptr<cv::Point> > vertex = piece->vertex;
 			//回転した値を代入
 			cv::Point C;
 			double rad = (y - click_point.y) / 50.0;
-			for (int i = 0; i < piece->get_number_of_corner(); i++) {
+			for (int i = 0; i < piece->number_of_corner; i++) {
 				C.x = min_point.x + (src_point[i].x - min_point.x) * cos(rad) - (src_point[i].y - min_point.y) * sin(rad);
 				C.y = min_point.y + (src_point[i].x - min_point.x) * sin(rad) + (src_point[i].y - min_point.y) * cos(rad);
 				*vertex[i] = C;
@@ -44,7 +44,7 @@ void my_mouse_callback(int event, int x, int y, int flags, void* param) {
 		lmoving = true;
 		for (int i = 0; i < pieces.size(); i++) {
 			if (!pieces[i]->put_flag)	continue;
-			vector<shared_ptr<cv::Point> > vertex = pieces[i]->get_vertex();
+			vector<shared_ptr<cv::Point> > vertex = pieces[i]->vertex;
 			cv::Point mi = pieces[i]->get_min_vertex();
 			cv::Point ma = pieces[i]->get_max_vertex();
 			//クリックした範囲内にあるか判定
@@ -75,7 +75,7 @@ void my_mouse_callback(int event, int x, int y, int flags, void* param) {
 		rmoving = true;
 		for (int i = 0; i < pieces.size(); i++) {
 			if (!pieces[i]->put_flag)	continue;
-			vector<shared_ptr<cv::Point> > vertex = pieces[i]->get_vertex();
+			vector<shared_ptr<cv::Point> > vertex = pieces[i]->vertex;
 			cv::Point mi = pieces[i]->get_min_vertex();
 			cv::Point ma = pieces[i]->get_max_vertex();
 			if (x > mi.x && y > mi.y && x < ma.x  && y < ma.y) {
@@ -83,7 +83,7 @@ void my_mouse_callback(int event, int x, int y, int flags, void* param) {
 				for (int i = 0; i < vertex.size(); i++) {
 					src_point.push_back(*vertex[i]);
 				}
-				min_point = *(pieces[i]->get_vertex())[0];
+				min_point = *(pieces[i]->vertex)[0];
 				piece = pieces[i];
 				break;
 			}
@@ -117,13 +117,13 @@ void GUI::draw(vector<shared_ptr<Piece> > pie, shared_ptr<Frame> frame) {
 	cv::Point frame_app[50];
 
 	//フレーム描画
-	vector<shared_ptr<cv::Point> > frame_vertex = frame->get_vertex();;
-	for (int j = 0; j < frame->get_number_of_corner(); j++) {
+	vector<shared_ptr<cv::Point> > frame_vertex = frame->vertex;
+	for (int j = 0; j < frame->number_of_corner; j++) {
 		app[j] = *frame_vertex[j];
 	}
 	//Frameの描画
-	for (int j = 0; j < frame->get_number_of_corner(); j++) {
-		if (j != frame->get_number_of_corner() - 1) {
+	for (int j = 0; j < frame->number_of_corner; j++) {
+		if (j != frame->number_of_corner - 1) {
 			line(img, cv::Point(frame_vertex[j]->x, frame_vertex[j]->y),
 				cv::Point(frame_vertex[j + 1]->x, frame_vertex[j + 1]->y), frame->color, 1, 8);
 
@@ -145,9 +145,9 @@ void GUI::draw(vector<shared_ptr<Piece> > pie, shared_ptr<Frame> frame) {
 		for (int i = 0; i < pieces.size(); i++) {
 			shared_ptr<Piece> p = pieces[i];
 			//if (!p->put_flag)	continue;
-			vector<shared_ptr<cv::Point> > vertex = p->get_vertex();;
+			vector<shared_ptr<cv::Point> > vertex = p->vertex;
 			//角の数
-			int corner = p->get_number_of_corner();
+			int corner = p->number_of_corner;
 			//普通の配列じゃないとコンパイラが通らないので
 			for (int j = 0; j < corner; j++) {
 				app[j] = *vertex[j];
