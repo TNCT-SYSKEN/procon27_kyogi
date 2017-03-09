@@ -26,8 +26,19 @@ void PieceManager::init_pieces(vector<shared_ptr<cv::Mat> > images, shared_ptr<F
 }
 
 void PieceManager::exec_algorithm() {
+	int frame_line, piece_number, piece_line;
+	int i;
 	search_angle();
-	put_image();
+	com_piece com;
+	for (i = combination_angles.size()-1; i >= 0; i--) {
+		if (search_line(i)) {
+			frame_line = combination_angles[i].num_frame_angle;
+			piece_number = combination_angles[i].num_piece;
+			piece_line = combination_angles[i].num_angle;
+			create_frame(frame_line, piece_number, piece_line);
+			put_image(i);
+		}
+	}
 }
 
 void PieceManager::search_angle() {
@@ -57,6 +68,7 @@ void PieceManager::search_angle() {
 }
 
 bool PieceManager::search_line(int p) {
+	cout << p;
 	int i = combination_angles[p].num_angle;
 	int j = combination_angles[p].num_piece;
 	int k = combination_angles[p].num_frame_angle;
@@ -71,7 +83,7 @@ bool PieceManager::search_line(int p) {
 		piece_line_other = pieces[j]->line_lengths[piece_lines.size() - 1];
 	}
 	if (i == 0) {
-		if (*frame_lines[frame_lines.size() - 1] - *piece_line_other) {
+		if (*frame_lines[frame_lines.size() - 1] - *piece_line_other > 0) {
 			if (*frame_lines[i] - *piece_lines[k] > 0) {
 				return true;
 			}
@@ -120,6 +132,8 @@ void PieceManager::create_frame(int i, int j, int k) {
 		//枠とピースの辺の比較処理
 		//もし枠の辺とピースの辺が同じであったなら次の処理で除く
 		//許容範囲は+-2
+		cout << endl;
+		cout << *frame_lines[set_frame] << " " << *piece_lines[set_frame] << endl;
 		if ((double)abs(*frame_lines[set_frame] - *piece_lines[set_line]) <= 2) {
 			sub_piece_line.push_back(set_line);
 		}
@@ -135,6 +149,7 @@ void PieceManager::create_frame(int i, int j, int k) {
 
 	//ここからピースの情報をpushback、ただし上で見つけた部分(sub_piece_line)を除く
 	//↑具体的にはpieces[j]->get_piece_line(sub_piece_line[i])
+	//この辺おかしいから直す -3/10
 	for (int p = k; p >= 0; p--) {
 		int flag = 0;
 		for (int h = 0; h < (int)sub_piece_line.size(); h++) {
@@ -198,10 +213,10 @@ void PieceManager::create_frame(int i, int j, int k) {
 	}
 }
 
-void PieceManager::put_image() {
+void PieceManager::put_image(int hoge) {
 	//枠とピースの頂点座標を取ってくる
 	//後で引数iを渡す
-	com_piece com = combination_angles[0];
+	com_piece com = combination_angles[hoge];
 	/*com_piece com = combination_angles[i];*/
 	vector<shared_ptr<cv::Point> > frame_vertex = frame->vertex;
 	vector<shared_ptr<cv::Point> > piece_vertex = pieces[com.num_piece]->vertex;
