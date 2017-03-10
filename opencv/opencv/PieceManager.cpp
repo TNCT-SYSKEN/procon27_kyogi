@@ -29,8 +29,8 @@ void PieceManager::exec_algorithm() {
 	int frame_line, piece_number, piece_line;
 	int i;
 	search_angle();
-	com_piece com;
-	for (i = combination_angles.size()-1; i >= 0; i--) {
+
+	for (i = (int)combination_angles.size()-1; i >= 0; i--) {
 		if (search_line(i)) {
 			frame_line = combination_angles[i].num_frame_angle;
 			piece_number = combination_angles[i].num_piece;
@@ -68,7 +68,6 @@ void PieceManager::search_angle() {
 }
 
 bool PieceManager::search_line(int p) {
-	cout << p;
 	int i = combination_angles[p].num_angle;
 	int j = combination_angles[p].num_piece;
 	int k = combination_angles[p].num_frame_angle;
@@ -76,6 +75,7 @@ bool PieceManager::search_line(int p) {
 	vector<shared_ptr<double> > frame_lines = frame->line_lengths;
 	vector<shared_ptr<double> > piece_lines = pieces[j]->line_lengths;
 	shared_ptr<double> piece_line_other;
+	cout << "test" << k << endl;
 	if (k != 0) {
 		piece_line_other = pieces[j]->line_lengths[k - 1];
 	}
@@ -90,7 +90,7 @@ bool PieceManager::search_line(int p) {
 		}
 	}
 	else if (i != 0) {
-		if (*frame_lines[i - 1] - *piece_line_other) {
+		if (*frame_lines[i - 1] - *piece_line_other > 0) {
 			if (*frame_lines[i] - *piece_lines[k] > 0) {
 				return true;
 			}
@@ -101,12 +101,48 @@ bool PieceManager::search_line(int p) {
 
 void PieceManager::create_frame(int i, int j, int k) {
 	int set_frame, set_line;
+	vector<shared_ptr<double> > f_sub;//ソートされる枠の辺
+	vector<shared_ptr<double> > p_sub;//ソートされるピースの辺
+	vector<int> dis_piece_line;//除外されるピースの辺の*要素番号*を格納した配列
+
 	vector<shared_ptr<double> > sub_frame_line; //枠の辺を避難(格納)させる配列
 	vector<double> sub_piece_line; //除かれるピースの辺を格納するhoge
 	vector<shared_ptr<double> > frame_lines = frame->line_lengths;
 	vector<shared_ptr<double> > piece_lines = pieces[j]->line_lengths;
 	for (int p = 0; p < (int)frame_lines.size(); p++) {
 		sub_frame_line.push_back(frame_lines[p]);
+	}
+
+	//共通角度nを基準としてピース及び枠の辺のソート
+	for (int h = i; h < (int)frame_lines.size(); h++) {
+		f_sub.push_back(frame_lines[h]);
+	}
+	for (int h = 0; h < i; h++) {
+		f_sub.push_back(frame_lines[h]);
+	}
+
+	for (int h = k; h < (int)piece_lines.size(); h++) {
+		p_sub.push_back(piece_lines[h]);
+	}
+	for (int h = 0; h < k; h++) {
+		p_sub.push_back(piece_lines[h]);
+	}
+
+	for (int h = 0; h < piece_lines.size(); h++) {
+		if ((double)abs(*frame_lines[*f_sub[h]] - *piece_lines[*p_sub[h]] <= 2)) {}
+		else {
+			break;
+		}
+		dis_piece_line.push_back(h);
+	}
+
+
+	for (int p = j; p < pieces[p]->line_lengths.size();p++) {
+		if (abs(*frame->angle[k] - *pieces[i]->angle[j]) <= 2
+			&& abs(*frame->line_lengths[k] - *pieces[i]->line_lengths[j])) {}
+		else {
+			//次の角度を見る処理
+		}
 	}
 
 	//ピースの除かれる部分を探索する処理
@@ -153,7 +189,7 @@ void PieceManager::create_frame(int i, int j, int k) {
 	for (int p = k; p >= 0; p--) {
 		int flag = 0;
 		for (int h = 0; h < (int)sub_piece_line.size(); h++) {
-			if (p == h) {
+			if (p == sub_piece_line[h]) {
 				flag = 1;
 			}
 			if (flag == 1) {
@@ -312,9 +348,4 @@ void PieceManager::put_image(int hoge) {
 		C.y = root.y + (src.x - root.x) * sin(radian) + (src.y - root.y) * cos(radian);
 		*piece_vertex[i] = C;
 	}
-}
-
-void PieceManager::line_search() {
-
-
 }

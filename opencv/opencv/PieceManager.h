@@ -47,8 +47,6 @@ public:
 	//サーチで見つけたピースを枠にはめる
 	void put_image(int i);
 
-	void line_search();
-
 //<<<<<<< HEAD
 	void create_frame(int i, int j, int k);
 //=======
