@@ -101,12 +101,13 @@ bool PieceManager::search_line(int p) {
 
 void PieceManager::create_frame(int i, int j, int k) {
 	int set_frame, set_line;
-	vector<shared_ptr<double> > f_sub;//ソートされる枠の辺
-	vector<shared_ptr<double> > p_sub;//ソートされるピースの辺
-	vector<int> dis_piece_line;//除外されるピースの辺の*要素番号*を格納した配列
+	vector<int> f_sub;//ソートされる枠の辺の要素番号
+	vector<int> p_sub;//ソートされるピースの辺要素番号
+	vector<int> dis_piece_line;//除外されるピースの辺の*要素番号*を格納する配列
+	vector<int> dis_frame_line;//除外される枠の辺の*要素番号*を格納する配列
 
 	vector<shared_ptr<double> > sub_frame_line; //枠の辺を避難(格納)させる配列
-	vector<double> sub_piece_line; //除かれるピースの辺を格納するhoge
+	vector<int> sub_piece_line; //新しく枠として取り込まれるピースの辺の*要素番号*を格納する配列
 	vector<shared_ptr<double> > frame_lines = frame->line_lengths;
 	vector<shared_ptr<double> > piece_lines = pieces[j]->line_lengths;
 	for (int p = 0; p < (int)frame_lines.size(); p++) {
@@ -115,138 +116,61 @@ void PieceManager::create_frame(int i, int j, int k) {
 
 	//共通角度nを基準としてピース及び枠の辺のソート
 	for (int h = i; h < (int)frame_lines.size(); h++) {
-		f_sub.push_back(frame_lines[h]);
+		f_sub.push_back(h);
 	}
 	for (int h = 0; h < i; h++) {
-		f_sub.push_back(frame_lines[h]);
+		f_sub.push_back(h);
 	}
 
 	for (int h = k; h < (int)piece_lines.size(); h++) {
-		p_sub.push_back(piece_lines[h]);
+		p_sub.push_back(h);
 	}
 	for (int h = 0; h < k; h++) {
-		p_sub.push_back(piece_lines[h]);
+		p_sub.push_back(h);
 	}
-
-	for (int h = 0; h < piece_lines.size(); h++) {
-		if ((double)abs(*frame_lines[*f_sub[h]] - *piece_lines[*p_sub[h]] <= 2)) {}
-		else {
-			break;
-		}
-		dis_piece_line.push_back(h);
-	}
-
-
-	for (int p = j; p < pieces[p]->line_lengths.size();p++) {
-		if (abs(*frame->angle[k] - *pieces[i]->angle[j]) <= 2
-			&& abs(*frame->line_lengths[k] - *pieces[i]->line_lengths[j])) {}
-		else {
-			//次の角度を見る処理
-		}
-	}
-
-	//ピースの除かれる部分を探索する処理
-	for (int p = 0; p < (int)piece_lines.size(); p++) {
-		if (i + p >= (int)frame_lines.size()
-			&& k + p >= (int)piece_lines.size()) {
-			set_frame = i + p - (int)frame_lines.size();
-			set_line = k + p - (int)piece_lines.size();
-		}
-		else if (i + p >= (int)frame_lines.size()) {
-			set_frame = i + p - (int)frame_lines.size();
-			set_line = p;
-		}
-		else if (k + p >= (int)piece_lines.size()) {
-			set_frame = i;
-			set_line = k + p - (int)piece_lines.size();
-		}
-		else {
-			set_frame = i;
-			set_line = k;
-		}
-
-		//枠とピースの辺の比較処理
-		//もし枠の辺とピースの辺が同じであったなら次の処理で除く
-		//許容範囲は+-2
-		cout << endl;
-		cout << *frame_lines[set_frame] << " " << *piece_lines[set_frame] << endl;
-		if ((double)abs(*frame_lines[set_frame] - *piece_lines[set_line]) <= 2) {
-			sub_piece_line.push_back(set_line);
-		}
-
-	}
-	//テスト
-	for (int p = 0; p < (int)sub_piece_line.size();p++) {
-		cout << sub_piece_line[p];
-	}
-
-	//ここで要素全削除
-	frame->line_lengths.erase(frame->line_lengths.begin(), frame->line_lengths.end());
-
-	//ここからピースの情報をpushback、ただし上で見つけた部分(sub_piece_line)を除く
-	//↑具体的にはpieces[j]->get_piece_line(sub_piece_line[i])
-	//この辺おかしいから直す -3/10
-	for (int p = k; p >= 0; p--) {
-		int flag = 0;
-		for (int h = 0; h < (int)sub_piece_line.size(); h++) {
-			if (p == sub_piece_line[h]) {
-				flag = 1;
-			}
-			if (flag == 1) {
-				frame->line_lengths.push_back(piece_lines[p]);
-				flag = 0;
-			}
-		}
-	}
-	for (int p = (int)piece_lines.size(); p > k; p--) {
-		int flag = 0;
-		for (int h = 0; h < (int)sub_piece_line.size(); h++) {
-			if (p == h) {
-				flag = 1;
-			}
-			if (flag == 1) {
-				frame->line_lengths.push_back(piece_lines[p]);
-				flag = 0;
-			}
-		}
-	}
-
-	//ここから枠の情報をpushback
-	//↓更新
-	//1ピース分しか出来てない
 	
-	if (i == 0) {
-		double test = *frame_lines[j] - *piece_lines[k];
-		shared_ptr<double> diff(&test);
-		frame->line_lengths.push_back(diff);
-	}
-
-	for (int p = 0; p < (int)sub_piece_line.size(); p++) {
-		if (p == i) {
-			double test = *frame_lines[p] - *piece_lines[k];
-			shared_ptr<double> diff(&test);
-			frame->line_lengths.push_back(diff);
-		}
-		else if (i != 0) {
-			if (i - 1 == p) {
-				double test = *frame_lines[p] - *piece_lines[k-1];
-				shared_ptr<double> diff(&test);
-				frame->line_lengths.push_back(diff);
-			}
-		}
-		else if (i == 0) {
-			if ((int)frame_lines.size() == p) {
-				double test = *frame_lines[p] - *piece_lines[k - 1];
-				shared_ptr<double> diff(&test);
-				frame->line_lengths.push_back(diff);
-			}
+	//ピース部分探索の処理
+	for (int h = 0; h < (int)p_sub.size(); h++) {
+		if ((double)abs(*frame->angle[f_sub[h]] - *pieces[j]->angle[p_sub[h]]) <= 2
+		&&  (double)abs(*frame_lines[f_sub[h]] - *piece_lines[p_sub[h]]) <= 2) {
+			//ピースの除かれる部分
+			dis_piece_line.push_back(h);
+			dis_frame_line.push_back(h);
 		}
 		else {
-			double test = *frame_lines[p];
-			shared_ptr<double> f_lines(&test);
-			frame->line_lengths.push_back(f_lines);
+			//ピースのpush_backされる部分
+			sub_piece_line.push_back(h);
 		}
 	}
+	
+	//枠部分探索の処理
+	//この部分のどっかでエラー
+	cout << endl << "size" << p_sub.size() << endl;
+	for (int p = 0; p < (int)p_sub.size();p++) {
+		if((double)abs(*frame->angle[f_sub[p]] - *pieces[j]->angle[p_sub[p]]) <= 2){
+			if ((double)abs(*frame_lines[f_sub[p]] - *piece_lines[p_sub[p]] <= 2)) {}
+			else {
+				//n-n'の枠の辺をpush_back
+				double test = *frame_lines[f_sub[p]] - *piece_lines[p_sub[p]];
+				shared_ptr<double> diff(&test);
+				sub_frame_line.push_back(diff);
+				dis_frame_line.push_back(p);
+			}
+		}
+	}
+	//ここで要素全削除
+	//for (int h = 0; h < 5; h++) {
+		//frame->line_lengths.pop_back();
+	//}
+
+	//ここからピースの情報をpushback、ただし上で見つけた部分(dis_piece_line)を除く
+	//↑具体的にはpiece_lines[sub_piece_line]
+	//(int)sub_piece_line.size() - 1
+	
+	//cout << endl << sub_piece_line[p] << " " << p;
+	//frame->line_lengths.push_back(piece_lines[sub_piece_line[p]]);
+	//ここから枠の情報をpushback
+	
 }
 
 void PieceManager::put_image(int hoge) {
